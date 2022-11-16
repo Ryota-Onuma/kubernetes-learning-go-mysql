@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql
+  namespace: mysql
+spec:
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:8.0.31
+        env:
+          - name: MYSQL_ROOT_PASSWORD
+            value: password
+          - name: MYSQL_DATABASE
+            value: test
+          - name: MYSQL_USER
+            value: sample_app
+          - name: MYSQL_PASSWORD
+            value: password
+        resources: {}
+        volumeMounts:
+          - name: mysql-initdb
+            mountPath: /docker-entrypoint-initdb.d
+          - name: mysql-conf-config
+            mountPath: /etc/mysql/conf.d
+        ports:
+          - containerPort: 3306
+      volumes:
+        - name: mysql-initdb
+          configMap:
+            name: mysql-initdb-config
+        - name: mysql-conf-config
+          configMap:
+            name: mysql-conf-config
